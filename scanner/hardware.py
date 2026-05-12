@@ -1,5 +1,6 @@
 import platform
 import subprocess
+import json
 from dataclasses import dataclass, field
 from typing import List
 
@@ -25,6 +26,14 @@ class GPUInfo:
     name: str
     vram_gb: float
     vendor: str
+    vram_capped: bool = False
+
+
+@dataclass
+class StorageInfo:
+    total_gb: float
+    free_gb: float
+    drive: str
 
 
 @dataclass
@@ -32,15 +41,16 @@ class SystemInfo:
     cpu: CPUInfo
     ram: RAMInfo
     gpus: List[GPUInfo]
+    storage: StorageInfo
     os_name: str
     os_version: str
 
 
 def _detect_vendor(name: str) -> str:
     n = name.lower()
-    if any(k in n for k in ["nvidia", "geforce", "rtx", "gtx", "quadro"]):
+    if any(k in n for k in ["nvidia", "geforce", "rtx", "gtx", "quadro", "tesla"]):
         return "NVIDIA"
-    if any(k in n for k in ["amd", "radeon", "rx ", "vega"]):
+    if any(k in n for k in ["amd", "radeon", "rx ", "vega", "navi", "rdna"]):
         return "AMD"
     if any(k in n for k in ["intel", "iris", "uhd", "arc"]):
         return "Intel"
@@ -58,13 +68,79 @@ def _get_nvidia_gpus() -> List[GPUInfo]:
             for line in result.stdout.strip().splitlines():
                 parts = line.split(", ")
                 if len(parts) == 2:
-                    name = parts[0].strip()
-                    vram_gb = round(float(parts[1].strip()) / 1024, 1)
-                    gpus.append(GPUInfo(name=name, vram_gb=vram_gb, vendor="NVIDIA"))
+                    gpus.append(GPUInfo(
+                        name=parts[0].strip(),
+                        vram_gb=round(float(parts[1].strip()) / 1024, 1),
+                        vendor="NVIDIA",
+                    ))
             return gpus
     except (FileNotFoundError, subprocess.TimeoutExpired, ValueError):
         pass
     return []
+
+
+def _get_gpus_windows() -> List[GPUInfo]:
+    nvidia = _get_nvidia_gpus()
+    nvidia_names = {g.name.lower() for g in nvidia}
+    other: List[GPUInfo] = []
+    try:
+        ps = (
+            "Get-WmiObject Win32_VideoController | "
+            "Select-Object Name, AdapterRAM | ConvertTo-Json -Compress"
+        )
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", ps],
+            capture_output=True, text=True, timeout=15,
+        )
+        if r.returncode == 0 and r.stdout.strip():
+            data = json.loads(r.stdout.strip())
+            if isinstance(data, dict):
+                data = [data]
+            for item in data:
+                name = (item.get("Name") or "Unknown GPU").strip()
+                if not name or name.lower() in nvidia_names:
+                    continue
+                vram_bytes = item.get("AdapterRAM") or 0
+                capped = vram_bytes == 4294967296
+                other.append(GPUInfo(
+                    name=name,
+                    vram_gb=round(vram_bytes / (1024 ** 3), 1),
+                    vendor=_detect_vendor(name),
+                    vram_capped=capped,
+                ))
+    except Exception:
+        pass
+    return nvidia + other
+
+
+def _get_storage_info() -> StorageInfo:
+    try:
+        import psutil
+        best = None
+        for part in psutil.disk_partitions(all=False):
+            if not part.mountpoint:
+                continue
+            try:
+                u = psutil.disk_usage(part.mountpoint)
+                if best is None or u.free > best[0]:
+                    best = (u.free, u.total, part.mountpoint)
+            except (PermissionError, OSError):
+                continue
+        if best and best[1] > 0:
+            return StorageInfo(
+                free_gb=round(best[0] / (1024 ** 3), 1),
+                total_gb=round(best[1] / (1024 ** 3), 1),
+                drive=best[2],
+            )
+    except Exception:
+        pass
+    try:
+        import psutil
+        u = psutil.disk_usage("C:\\")
+        return StorageInfo(round(u.free/(1024**3),1), round(u.total/(1024**3),1), "C:\\")
+    except Exception:
+        pass
+    return StorageInfo(0.0, 0.0, "Unknown")
 
 
 def _get_cpu_info() -> CPUInfo:
@@ -100,11 +176,18 @@ def _get_ram_info() -> RAMInfo:
 
 
 def scan_hardware() -> SystemInfo:
-    gpus = _get_nvidia_gpus()
+    os_name = platform.system()
+    gpus = _get_gpus_windows() if os_name == "Windows" else _get_nvidia_gpus()
+    seen, unique = set(), []
+    for g in gpus:
+        if g.name not in seen:
+            seen.add(g.name)
+            unique.append(g)
     return SystemInfo(
         cpu=_get_cpu_info(),
         ram=_get_ram_info(),
-        gpus=gpus,
-        os_name=platform.system(),
+        gpus=unique,
+        storage=_get_storage_info(),
+        os_name=os_name,
         os_version=platform.version(),
     )
