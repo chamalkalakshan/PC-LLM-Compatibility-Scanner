@@ -123,6 +123,33 @@ LLM_DATABASE: List[LLMModel] = [
         ollama_tag="codellama:7b", context_length=16384, released_year=2023,
     ),
 
+    LLMModel(
+        name="DeepSeek-R1 Distill 7B",
+        family="DeepSeek", parameters_b=7.0,
+        min_vram_gb=4.5, rec_vram_gb=8.0,
+        min_ram_gb=7.0,  rec_ram_gb=10.0,
+        use_cases=["reasoning", "math", "code", "STEM"],
+        description="Distilled version of DeepSeek-R1. Exceptional reasoning and math.",
+        ollama_tag="deepseek-r1:7b", context_length=65536, released_year=2025,
+    ),
+    LLMModel(
+        name="DeepSeek-R1 Distill 14B",
+        family="DeepSeek", parameters_b=14.0,
+        min_vram_gb=8.5, rec_vram_gb=16.0,
+        min_ram_gb=12.0, rec_ram_gb=20.0,
+        use_cases=["reasoning", "math", "code", "STEM"],
+        description="Distilled R1 reasoning model. Excellent at complex problem solving.",
+        ollama_tag="deepseek-r1:14b", context_length=65536, released_year=2025,
+    ),
+    LLMModel(
+        name="DeepSeek-R1 Distill 32B",
+        family="DeepSeek", parameters_b=32.0,
+        min_vram_gb=19.0, rec_vram_gb=24.0,
+        min_ram_gb=24.0,  rec_ram_gb=40.0,
+        use_cases=["reasoning", "math", "code", "STEM"],
+        description="Powerful reasoning model. Near frontier-level on math and science.",
+        ollama_tag="deepseek-r1:32b", context_length=65536, released_year=2025,
+    ),
     # ── Medium models (9-30B) ──────────────────────────────────────────────
     LLMModel(
         name="Phi-4 14B",
