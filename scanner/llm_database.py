@@ -205,4 +205,52 @@ LLM_DATABASE: List[LLMModel] = [
         description="Meta's large code model. Excellent for complex programming tasks.",
         ollama_tag="codellama:34b", context_length=16384, released_year=2023,
     ),
+
+    # ── Large models (30-72B) ──────────────────────────────────────────────
+    LLMModel(
+        name="Llama 3.1 70B",
+        family="Llama", parameters_b=70.0,
+        min_vram_gb=40.0, rec_vram_gb=48.0,
+        min_ram_gb=44.0,  rec_ram_gb=64.0,
+        use_cases=["chat", "reasoning", "code", "general"],
+        description="Meta's flagship open model -- near GPT-4 quality on many tasks.",
+        ollama_tag="llama3.1:70b", context_length=131072, released_year=2024,
+    ),
+    LLMModel(
+        name="Qwen2.5 72B",
+        family="Qwen", parameters_b=72.0,
+        min_vram_gb=42.0, rec_vram_gb=64.0,
+        min_ram_gb=46.0,  rec_ram_gb=80.0,
+        use_cases=["chat", "code", "multilingual", "math"],
+        description="Top open-weight model -- outstanding across almost every benchmark.",
+        ollama_tag="qwen2.5:72b", context_length=131072, released_year=2024,
+    ),
+    LLMModel(
+        name="DeepSeek-R1 Distill 70B",
+        family="DeepSeek", parameters_b=70.0,
+        min_vram_gb=40.0, rec_vram_gb=48.0,
+        min_ram_gb=44.0,  rec_ram_gb=64.0,
+        use_cases=["reasoning", "math", "code", "STEM"],
+        description="Frontier-level reasoning. Competes with o1-mini on STEM benchmarks.",
+        ollama_tag="deepseek-r1:70b", context_length=65536, released_year=2025,
+    ),
+    LLMModel(
+        name="Mixtral 8x7B",
+        family="Mixtral", parameters_b=46.7,
+        min_vram_gb=26.0, rec_vram_gb=48.0,
+        min_ram_gb=30.0,  rec_ram_gb=48.0,
+        use_cases=["chat", "reasoning", "code", "multilingual"],
+        description="MoE architecture -- 8 experts, 2 active. Fast and very capable.",
+        ollama_tag="mixtral:8x7b", context_length=32768, released_year=2024,
+    ),
+    # ── Very large models (100B+) ──────────────────────────────────────────
+    LLMModel(
+        name="Llama 3.1 405B",
+        family="Llama", parameters_b=405.0,
+        min_vram_gb=230.0, rec_vram_gb=320.0,
+        min_ram_gb=240.0,  rec_ram_gb=400.0,
+        use_cases=["chat", "reasoning", "code", "research"],
+        description="Meta's largest open model. Requires server-grade hardware.",
+        ollama_tag="llama3.1:405b", context_length=131072, released_year=2024,
+    ),
 ]
