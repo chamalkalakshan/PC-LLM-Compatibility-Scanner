@@ -4,6 +4,7 @@ setup(
     name="pc-llm-scanner",
     version="1.0.0",
     author="Chamalka Lakshan",
+    author_email="chamalkalakshan100@gmail.com",
     description="Scan PC hardware and recommend compatible local LLMs",
     packages=find_packages(),
     python_requires=">=3.9",

@@ -146,18 +146,22 @@ def _get_storage_info() -> StorageInfo:
 def _get_cpu_info() -> CPUInfo:
     try:
         import psutil
+        import cpuinfo
+        info = cpuinfo.get_cpu_info()
         freq = psutil.cpu_freq()
+        name = info.get("brand_raw") or platform.processor() or "Unknown CPU"
+        arch = info.get("arch", platform.machine())
         max_freq = round(
             (freq.max if freq and freq.max else (freq.current if freq else 0)) / 1000, 2
         )
-        name = platform.processor() or "Unknown CPU"
+        is_apple = any(k in name for k in ("Apple", "M1", "M2", "M3", "M4"))
         return CPUInfo(
             name=name,
             physical_cores=psutil.cpu_count(logical=False) or 1,
             logical_cores=psutil.cpu_count(logical=True) or 1,
             max_freq_ghz=max_freq,
-            architecture=platform.machine(),
-            is_apple_silicon="Apple" in name,
+            architecture=arch,
+            is_apple_silicon=is_apple,
         )
     except Exception:
         return CPUInfo(platform.processor() or "Unknown CPU", 1, 1, 0.0, platform.machine())
