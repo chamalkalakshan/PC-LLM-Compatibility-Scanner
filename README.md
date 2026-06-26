@@ -1,16 +1,16 @@
 # PC LLM Compatibility Scanner
 
-Automatically detects your PC's hardware and tells you exactly which local LLMs you can run — and how well.
+Automatically detects your PC's hardware and tells you exactly which local LLMs you can run - and how well.
 
 ## Features
 
-- **Hardware detection** — CPU, RAM, GPU (VRAM), disk space
-- **26 LLM catalogue** — Llama 3, Mistral, Qwen, DeepSeek-R1, Phi, Gemma, Mixtral and more
-- **5-tier rating system** — Excellent / Good / Possible / Slow / No-Go
-- **Run mode** — GPU, CPU, partial GPU offload
-- **Ollama commands** — copy-paste ready `ollama run` commands
-- **Interactive TUI** — two-pane Textual UI with live filter and model detail popup
-- **Export** — save results as JSON
+- **Hardware detection** - CPU, RAM, GPU (VRAM), disk space
+- **26 LLM catalogue** - Llama 3, Mistral, Qwen, DeepSeek-R1, Phi, Gemma, Mixtral and more
+- **5-tier rating system** - Excellent / Good / Possible / Slow / No-Go
+- **Run mode** - GPU, CPU, partial GPU offload
+- **Ollama commands** - copy-paste ready `ollama run` commands
+- **Interactive TUI** - two-pane Textual UI with live filter and model detail popup
+- **Export** - save results as JSON
 
 ## Quick Start
 
@@ -92,11 +92,11 @@ python main.py --export-json results.json
 
 ## How It Works
 
-1. `scanner/hardware.py` — detects CPU, RAM, GPU, storage via `psutil`, `py-cpuinfo`, `nvidia-smi`, and PowerShell WMI
-2. `scanner/llm_database.py` — catalogue of 26 models with Q4_K_M quantised VRAM/RAM requirements
-3. `scanner/recommender.py` — scores each model against your hardware and assigns a tier
-4. `scanner/display.py` — renders results with `rich` for the CLI view
-5. `ui.py` — interactive Textual TUI with live hardware panel, filterable model table, and detail popups
+1. `scanner/hardware.py` - detects CPU, RAM, GPU, storage via `psutil`, `py-cpuinfo`, `nvidia-smi`, and PowerShell WMI
+2. `scanner/llm_database.py` - catalogue of 26 models with Q4_K_M quantised VRAM/RAM requirements
+3. `scanner/recommender.py` - scores each model against your hardware and assigns a tier
+4. `scanner/display.py` - renders results with `rich` for the CLI view
+5. `ui.py` - interactive Textual TUI with live hardware panel, filterable model table, and detail popups
 
 ## Author
 
