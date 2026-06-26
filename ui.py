@@ -103,7 +103,7 @@ class ModelDetailScreen(ModalScreen):
 class HardwarePanel(Static):
     """Left-side panel that renders live hardware info."""
 
-    def _render_content(self, hw: SystemInfo | None, scanning: bool) -> str:
+    def _build_display(self, hw: SystemInfo | None, scanning: bool) -> str:
         if scanning:
             return "\n\n  [dim]Scanning hardware…[/dim]"
         if hw is None:
@@ -156,7 +156,7 @@ class HardwarePanel(Static):
         return "\n".join(lines)
 
     def refresh_content(self, hw: SystemInfo | None, scanning: bool) -> None:
-        self.update(self._render_content(hw, scanning))
+        self.update(self._build_display(hw, scanning))
 
 
 # ── Main App ─────────────────────────────────────────────────────────────────

@@ -11,3 +11,5 @@ venv/
 Thumbs.db
 scan_results*.json
 scan_results*.html
+screenshot_*.svg
+screenshot_*.png
