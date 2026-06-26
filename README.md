@@ -2,6 +2,8 @@
 
 Automatically detects your PC's hardware and tells you exactly which local LLMs you can run - and how well.
 
+![PC LLM Compatibility Scanner TUI](preview.png)
+
 ## Features
 
 - **Hardware detection** - CPU, RAM, GPU (VRAM), disk space
