@@ -1,15 +1,15 @@
 # PC LLM Compatibility Scanner
 
-Automatically detects your PC's hardware and tells you exactly which local LLMs you can run — and how well.
+Automatically detects your PC's hardware and tells you exactly which local LLMs you can run - and how well.
 
 ## Features
 
-- **Hardware detection** — CPU, RAM, GPU (VRAM), disk space
-- **25+ LLM catalogue** — Llama 3, Mistral, Qwen, DeepSeek-R1, Phi, Gemma, Mixtral and more
-- **5-tier rating system** — Excellent / Good / Possible / Slow / No-Go
-- **Run mode** — GPU, CPU, Partial GPU offload, Multi-GPU
-- **Ollama commands** — Copy-paste ready `ollama run` commands
-- **Export** — Save results as JSON for scripting
+- **Hardware detection** - CPU, RAM, GPU (VRAM), disk space
+- **25+ LLM catalogue** - Llama 3, Mistral, Qwen, DeepSeek-R1, Phi, Gemma, Mixtral and more
+- **5-tier rating system** - Excellent / Good / Possible / Slow / No-Go
+- **Run mode** - GPU, CPU, Partial GPU offload, Multi-GPU
+- **Ollama commands** - Copy-paste ready `ollama run` commands
+- **Export** - Save results as JSON for scripting
 
 ## Quick Start
 
@@ -50,8 +50,8 @@ python main.py --hide-nogo --top 8 --export-json my_results.json
 
 | Tier | Description |
 |------|-------------|
-| 🚀 EXCELLENT | Fits in GPU VRAM with headroom — fast inference |
-| ✅ GOOD | Fits in GPU VRAM (tight) — good performance |
+| 🚀 EXCELLENT | Fits in GPU VRAM with headroom - fast inference |
+| ✅ GOOD | Fits in GPU VRAM (tight) - good performance |
 | ⚡ POSSIBLE | Partial GPU offload or CPU inference with plenty of RAM |
 | 🐌 SLOW | CPU-only, works but < 2 tokens/sec |
 | ❌ NO-GO | Insufficient RAM and VRAM |
@@ -76,10 +76,10 @@ python main.py --hide-nogo --top 8 --export-json my_results.json
 
 ## How It Works
 
-1. `scanner/hardware.py` — Detects CPU, RAM, GPU, storage using `psutil`, `py-cpuinfo`, `nvidia-smi`, and PowerShell WMI
-2. `scanner/llm_database.py` — Catalogue of 25+ models with Q4-quantised VRAM/RAM requirements
-3. `scanner/recommender.py` — Scores each model against your hardware and assigns a tier
-4. `scanner/display.py` — Renders everything with `rich` for a polished terminal UI
+1. `scanner/hardware.py` - Detects CPU, RAM, GPU, storage using `psutil`, `py-cpuinfo`, `nvidia-smi`, and PowerShell WMI
+2. `scanner/llm_database.py` - Catalogue of 25+ models with Q4-quantised VRAM/RAM requirements
+3. `scanner/recommender.py` - Scores each model against your hardware and assigns a tier
+4. `scanner/display.py` - Renders everything with `rich` for a polished terminal UI
 
 ## Author
 
