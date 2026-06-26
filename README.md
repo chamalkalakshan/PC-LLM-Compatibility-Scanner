@@ -1,60 +1,76 @@
 # PC LLM Compatibility Scanner
 
-Automatically detects your PC's hardware and tells you exactly which local LLMs you can run - and how well.
+Automatically detects your PC's hardware and tells you exactly which local LLMs you can run — and how well.
 
 ## Features
 
-- **Hardware detection** - CPU, RAM, GPU (VRAM), disk space
-- **25+ LLM catalogue** - Llama 3, Mistral, Qwen, DeepSeek-R1, Phi, Gemma, Mixtral and more
-- **5-tier rating system** - Excellent / Good / Possible / Slow / No-Go
-- **Run mode** - GPU, CPU, Partial GPU offload, Multi-GPU
-- **Ollama commands** - Copy-paste ready `ollama run` commands
-- **Export** - Save results as JSON for scripting
+- **Hardware detection** — CPU, RAM, GPU (VRAM), disk space
+- **26 LLM catalogue** — Llama 3, Mistral, Qwen, DeepSeek-R1, Phi, Gemma, Mixtral and more
+- **5-tier rating system** — Excellent / Good / Possible / Slow / No-Go
+- **Run mode** — GPU, CPU, partial GPU offload
+- **Ollama commands** — copy-paste ready `ollama run` commands
+- **Interactive TUI** — two-pane Textual UI with live filter and model detail popup
+- **Export** — save results as JSON
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 2. Run the scanner
+# Interactive TUI (recommended)
+python ui.py
+
+# CLI one-shot
 python main.py
 ```
 
-## Usage
+## TUI
 
 ```bash
-# Show all models with full table + top 5 picks
+python ui.py
+```
+
+| Key | Action |
+|-----|--------|
+| `r` | Rescan hardware |
+| `e` | Export results to JSON |
+| `q` | Quit |
+| `Enter` | Open model detail popup |
+| `↑ ↓` | Navigate model list |
+| Filter buttons | Filter by tier |
+
+## CLI Usage
+
+```bash
+# Full table with top 5 picks
 python main.py
 
-# Show only top 10 models your PC can run
+# Top 10 runnable models
 python main.py --top 10
 
-# Hide models that won't run on your hardware
+# Hide models that won't run
 python main.py --hide-nogo
 
-# Show only EXCELLENT tier models
+# Only EXCELLENT tier
 python main.py --tier EXCELLENT
 
-# Get detailed info for a specific model
+# Detailed info for a specific model
 python main.py --detail "Llama 3.1 8B"
 
-# Export results to JSON
+# Export to JSON
 python main.py --export-json results.json
-
-# Combine flags
-python main.py --hide-nogo --top 8 --export-json my_results.json
 ```
 
 ## Compatibility Tiers
 
-| Tier | Description |
-|------|-------------|
-| 🚀 EXCELLENT | Fits in GPU VRAM with headroom - fast inference |
-| ✅ GOOD | Fits in GPU VRAM (tight) - good performance |
-| ⚡ POSSIBLE | Partial GPU offload or CPU inference with plenty of RAM |
-| 🐌 SLOW | CPU-only, works but < 2 tokens/sec |
-| ❌ NO-GO | Insufficient RAM and VRAM |
+| Tier | Condition | Expected speed |
+|------|-----------|----------------|
+| 🚀 EXCELLENT | Fits in GPU VRAM with headroom | 20–80 tok/s |
+| ✅ GOOD | Fits in GPU VRAM (tight) | Full GPU speed |
+| ⚡ POSSIBLE | Partial GPU offload or CPU with plenty of RAM | 2–10 tok/s |
+| 🐌 SLOW | CPU-only, RAM is tight | < 2 tok/s |
+| ❌ NO-GO | Insufficient RAM and VRAM | Cannot load |
 
 ## Supported Models
 
@@ -71,15 +87,16 @@ python main.py --hide-nogo --top 8 --export-json my_results.json
 ## Requirements
 
 - Python 3.9+
-- NVIDIA GPU: `nvidia-smi` must be accessible for accurate VRAM detection
-- AMD/Intel GPU: detected via Windows WMI (VRAM may show 4 GB cap on large cards)
+- NVIDIA GPU: `nvidia-smi` must be on PATH for accurate VRAM detection
+- AMD/Intel GPU: detected via Windows WMI (VRAM may show 4 GB cap on large cards due to WMI 32-bit overflow)
 
 ## How It Works
 
-1. `scanner/hardware.py` - Detects CPU, RAM, GPU, storage using `psutil`, `py-cpuinfo`, `nvidia-smi`, and PowerShell WMI
-2. `scanner/llm_database.py` - Catalogue of 25+ models with Q4-quantised VRAM/RAM requirements
-3. `scanner/recommender.py` - Scores each model against your hardware and assigns a tier
-4. `scanner/display.py` - Renders everything with `rich` for a polished terminal UI
+1. `scanner/hardware.py` — detects CPU, RAM, GPU, storage via `psutil`, `py-cpuinfo`, `nvidia-smi`, and PowerShell WMI
+2. `scanner/llm_database.py` — catalogue of 26 models with Q4_K_M quantised VRAM/RAM requirements
+3. `scanner/recommender.py` — scores each model against your hardware and assigns a tier
+4. `scanner/display.py` — renders results with `rich` for the CLI view
+5. `ui.py` — interactive Textual TUI with live hardware panel, filterable model table, and detail popups
 
 ## Author
 
