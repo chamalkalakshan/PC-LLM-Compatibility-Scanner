@@ -9,3 +9,5 @@ venv/
 *.log
 .DS_Store
 Thumbs.db
+scan_results*.json
+scan_results*.html
