@@ -65,6 +65,8 @@ def print_hardware(hw: SystemInfo):
             if gpu.vram_gb > 0:
                 cap_note = "  [yellow](WMI 32-bit cap – actual may be higher)[/yellow]" if gpu.vram_capped else ""
                 console.print(f"         VRAM: [cyan]{gpu.vram_gb:.1f} GB[/cyan]{cap_note}")
+            elif gpu.vram_unknown:
+                console.print("         VRAM: [yellow]Unknown (install vendor tools, e.g. rocm-smi, for size)[/yellow]")
             else:
                 console.print("         VRAM: [dim]Not detected (integrated / unknown)[/dim]")
     else:

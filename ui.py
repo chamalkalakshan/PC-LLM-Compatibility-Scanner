@@ -136,6 +136,8 @@ class HardwarePanel(Static):
                     vram_bar = _bar(gpu.vram_gb, max(gpu.vram_gb * 1.1, 24))
                     lines.append(f"  {gpu.vram_gb:.1f} GB VRAM{cap}")
                     lines.append(f"  [green]{vram_bar}[/]")
+                elif gpu.vram_unknown:
+                    lines.append("  [yellow]VRAM unknown[/yellow]")
             lines.append("")
         else:
             lines += [" [bold cyan]GPU[/bold cyan]", "  [dim]None detected[/dim]", ""]
