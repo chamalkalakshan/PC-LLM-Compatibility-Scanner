@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pc-llm-scanner",
-    version="1.0.0",
+    version="1.0.1",
     author="Chamalka Lakshan",
     author_email="chamalkalakshan100@gmail.com",
     description="Scan PC hardware and recommend compatible local LLMs",
