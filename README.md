@@ -1,4 +1,4 @@
-# PC LLM Compatibility Scanner (TUI)
+# LLM Compatibility Scanner (TUI)
 
 Automatically detects your PC's hardware and tells you exactly which local LLMs you can run - and how well.
 
