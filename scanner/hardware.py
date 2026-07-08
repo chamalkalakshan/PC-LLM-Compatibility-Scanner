@@ -27,6 +27,7 @@ class GPUInfo:
     vram_gb: float
     vendor: str
     vram_capped: bool = False
+    vram_unknown: bool = False
 
 
 @dataclass
