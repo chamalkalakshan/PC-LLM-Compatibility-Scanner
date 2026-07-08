@@ -13,6 +13,7 @@ setup(
         "psutil>=5.9.0",
         "py-cpuinfo>=9.0.0",
         "GPUtil>=1.4.0",
+        "textual>=0.70.0",
     ],
     entry_points={
         "console_scripts": [
