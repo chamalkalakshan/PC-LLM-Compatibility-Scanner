@@ -80,6 +80,56 @@ def _get_nvidia_gpus() -> List[GPUInfo]:
     return []
 
 
+def _get_amd_gpus_linux() -> List[GPUInfo]:
+    try:
+        result = subprocess.run(
+            ["rocm-smi", "--showmeminfo", "vram", "--showproductname", "--json"],
+            capture_output=True, text=True, timeout=8,
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            return []
+        data = json.loads(result.stdout)
+        gpus = []
+        for card, info in data.items():
+            total_bytes = info.get("VRAM Total Memory (B)")
+            name = info.get("Card series") or info.get("Card model") or card
+            if total_bytes is None:
+                continue
+            gpus.append(GPUInfo(
+                name=f"AMD {name}".strip(),
+                vram_gb=round(int(total_bytes) / (1024 ** 3), 1),
+                vendor="AMD",
+            ))
+        return gpus
+    except (FileNotFoundError, subprocess.TimeoutExpired, ValueError, json.JSONDecodeError):
+        return []
+
+
+def _get_gpus_linux() -> List[GPUInfo]:
+    nvidia = _get_nvidia_gpus()
+    amd = _get_amd_gpus_linux()
+    known_names = {g.name.lower() for g in nvidia + amd}
+    other: List[GPUInfo] = []
+    try:
+        result = subprocess.run(["lspci"], capture_output=True, text=True, timeout=8)
+        if result.returncode == 0:
+            for line in result.stdout.splitlines():
+                if "VGA compatible controller" not in line and "3D controller" not in line:
+                    continue
+                name = line.split(":", 2)[-1].strip()
+                if not name or name.lower() in known_names:
+                    continue
+                other.append(GPUInfo(
+                    name=name,
+                    vram_gb=0.0,
+                    vendor=_detect_vendor(name),
+                    vram_unknown=True,
+                ))
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        pass
+    return nvidia + amd + other
+
+
 def _get_gpus_windows() -> List[GPUInfo]:
     nvidia = _get_nvidia_gpus()
     nvidia_names = {g.name.lower() for g in nvidia}
