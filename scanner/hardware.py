@@ -130,6 +130,43 @@ def _get_gpus_linux() -> List[GPUInfo]:
     return nvidia + amd + other
 
 
+def _get_gpus_macos(ram_total_gb: float) -> List[GPUInfo]:
+    try:
+        result = subprocess.run(
+            ["system_profiler", "SPDisplaysDataType", "-json"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            return []
+        data = json.loads(result.stdout)
+        gpus = []
+        for item in data.get("SPDisplaysDataType", []):
+            name = item.get("sppci_model") or item.get("_name") or "Unknown GPU"
+            is_apple_silicon_gpu = "apple" in name.lower() or "spdisplays_vram_shared" in item
+            vram_str = item.get("spdisplays_vram") or item.get("spdisplays_vram_shared", "")
+            if is_apple_silicon_gpu:
+                # Apple Silicon: GPU shares unified memory with the CPU.
+                gpus.append(GPUInfo(
+                    name=name, vram_gb=ram_total_gb, vendor="Apple",
+                ))
+                continue
+            vram_gb = 0.0
+            vram_unknown = True
+            digits = "".join(c for c in vram_str if c.isdigit())
+            if digits:
+                vram_gb = float(digits)
+                if "gb" not in vram_str.lower() and "mb" in vram_str.lower():
+                    vram_gb = round(vram_gb / 1024, 1)
+                vram_unknown = False
+            gpus.append(GPUInfo(
+                name=name, vram_gb=vram_gb,
+                vendor=_detect_vendor(name), vram_unknown=vram_unknown,
+            ))
+        return gpus
+    except (FileNotFoundError, subprocess.TimeoutExpired, ValueError, json.JSONDecodeError):
+        return []
+
+
 def _get_gpus_windows() -> List[GPUInfo]:
     nvidia = _get_nvidia_gpus()
     nvidia_names = {g.name.lower() for g in nvidia}
