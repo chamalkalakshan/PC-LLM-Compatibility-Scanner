@@ -122,7 +122,8 @@ def main():
     else:
         show_no_go = not args.hide_nogo
         print_recommendations(recs, show_no_go=show_no_go, filter_tier=args.tier)
-        print_top_picks(recs, n=5)
+        if not args.tier:
+            print_top_picks(recs, n=5)
 
     print_legend()
 
