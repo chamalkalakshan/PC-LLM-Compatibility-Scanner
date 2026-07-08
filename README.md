@@ -89,12 +89,21 @@ python main.py --export-json results.json
 ## Requirements
 
 - Python 3.9+
-- NVIDIA GPU: `nvidia-smi` must be on PATH for accurate VRAM detection
-- AMD/Intel GPU: detected via Windows WMI (VRAM may show 4 GB cap on large cards due to WMI 32-bit overflow)
+- NVIDIA GPU (any OS): `nvidia-smi` must be on PATH for accurate VRAM detection
+- Windows AMD/Intel GPU: detected via WMI (VRAM may show 4 GB cap on large cards due to WMI 32-bit overflow)
+- Linux AMD GPU: `rocm-smi` on PATH for accurate VRAM detection, otherwise the GPU is listed with VRAM unknown (via `lspci`)
+- macOS: detected via `system_profiler`; Apple Silicon GPUs report system RAM as VRAM (unified memory)
+
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
 
 ## How It Works
 
-1. `scanner/hardware.py` - detects CPU, RAM, GPU, storage via `psutil`, `py-cpuinfo`, `nvidia-smi`, and PowerShell WMI
+1. `scanner/hardware.py` - detects CPU, RAM, GPU, storage via `psutil`, `py-cpuinfo`, `nvidia-smi`/`rocm-smi`/`system_profiler`, and Windows WMI
 2. `scanner/llm_database.py` - catalogue of 33 models with Q4_K_M quantised VRAM/RAM requirements
 3. `scanner/recommender.py` - scores each model against your hardware and assigns a tier
 4. `scanner/display.py` - renders results with `rich` for the CLI view
