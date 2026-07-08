@@ -1,3 +1,4 @@
+import sys
 from typing import List, Optional
 
 from rich.console import Console
@@ -10,6 +11,14 @@ from rich.align import Align
 
 from .hardware import SystemInfo
 from .recommender import Recommendation, RunTier, TIER_EMOJI, TIER_LABEL, get_summary_stats
+
+# On Windows, stdout defaults to the system ANSI code page (e.g. cp1252) unless
+# the console is UTF-8, which can't encode the tier emoji and crashes the print.
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
 
 console = Console(force_terminal=True, highlight=False)
 
