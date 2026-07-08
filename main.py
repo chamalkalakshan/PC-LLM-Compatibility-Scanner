@@ -115,9 +115,7 @@ def main():
             sys.exit(1)
         for m in matches:
             print_detail(m)
-        return
-
-    if args.top and args.top > 0:
+    elif args.top and args.top > 0:
         print_top_picks(recs, n=args.top)
     else:
         show_no_go = not args.hide_nogo
@@ -125,7 +123,8 @@ def main():
         if not args.tier:
             print_top_picks(recs, n=5)
 
-    print_legend()
+    if not args.detail:
+        print_legend()
 
     if args.export_json:
         export_json(hw, recs, args.export_json)
