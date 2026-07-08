@@ -269,7 +269,15 @@ def _get_ram_info() -> RAMInfo:
 
 def scan_hardware() -> SystemInfo:
     os_name = platform.system()
-    gpus = _get_gpus_windows() if os_name == "Windows" else _get_nvidia_gpus()
+    ram = _get_ram_info()
+    if os_name == "Windows":
+        gpus = _get_gpus_windows()
+    elif os_name == "Darwin":
+        gpus = _get_gpus_macos(ram.total_gb)
+    elif os_name == "Linux":
+        gpus = _get_gpus_linux()
+    else:
+        gpus = _get_nvidia_gpus()
     seen, unique = set(), []
     for g in gpus:
         if g.name not in seen:
@@ -277,7 +285,7 @@ def scan_hardware() -> SystemInfo:
             unique.append(g)
     return SystemInfo(
         cpu=_get_cpu_info(),
-        ram=_get_ram_info(),
+        ram=ram,
         gpus=unique,
         storage=_get_storage_info(),
         os_name=os_name,
